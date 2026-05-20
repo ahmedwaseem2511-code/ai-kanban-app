@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+/* Mobile par horizontal scroll scrollbar hide karo */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Mobile par date input theek dikhaye */
+input[type="date"] {
+  color-scheme: dark;
+}

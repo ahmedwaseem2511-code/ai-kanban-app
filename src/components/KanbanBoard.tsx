@@ -47,7 +47,7 @@ export default function KanbanBoard() {
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(TouchSensor,   { activationConstraint: { delay: 200, tolerance: 8 } })
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 10 } })
   )
 
   const handleDragStart = (event: any) => {
@@ -77,17 +77,16 @@ export default function KanbanBoard() {
     <div className="w-full">
 
       {/* Page Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-white text-xl font-bold">My Tasks</h2>
+      <div className="flex justify-between items-center mb-4 sm:mb-6">
+        <h2 className="text-white text-lg sm:text-xl font-bold">My Tasks</h2>
         <button
           onClick={() => setShowModal(true)}
-          className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-4 py-2 rounded-xl font-semibold text-sm transition-all"
+          className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-3 sm:px-4 py-2 rounded-xl font-semibold text-sm transition-all"
         >
           + Add Task
         </button>
       </div>
 
-      {/* Kanban Board */}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -95,55 +94,61 @@ export default function KanbanBoard() {
         onDragEnd={handleDragEnd}
       >
         {/* 
-          Mobile: single column stack  
-          Tablet (md): 3 columns side by side
-          Each column has a fixed min-height so drop zones always exist
+          Mobile: horizontal scroll (Trello style), each column 280px wide
+          Desktop: 3 equal columns in a grid
         */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="flex md:grid md:grid-cols-3 gap-3 sm:gap-4 overflow-x-auto pb-4 md:overflow-x-visible scrollbar-hide">
           {columns.map((col) => {
             const colTasks = tasks.filter((t: any) => t.status === col.id)
             return (
-              <DroppableColumn key={col.id} id={col.id}>
-                <div className="bg-slate-800/80 border border-slate-700/50 rounded-2xl p-4 min-h-[300px]">
-
-                  {/* Column Header */}
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className={`w-2.5 h-2.5 rounded-full ${col.dot}`} />
-                      <h3 className="text-white font-semibold text-sm">{col.label}</h3>
-                    </div>
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${col.count_bg}`}>
-                      {colTasks.length}
-                    </span>
-                  </div>
-
-                  {/* Task List */}
-                  <SortableContext
-                    items={colTasks.map((t: any) => t.id)}
-                    strategy={verticalListSortingStrategy}
+              <div
+                key={col.id}
+                className="w-[280px] sm:w-[300px] flex-shrink-0 md:w-auto md:flex-shrink"
+              >
+                <DroppableColumn id={col.id}>
+                  <div
+                    className="bg-slate-800/80 border border-slate-700/50 rounded-2xl p-3 sm:p-4 min-h-[300px]"
+                    style={{ touchAction: 'none' }}
                   >
-                    <div className="flex flex-col gap-3">
-                      {colTasks.map((task: any) => (
-                        <TaskCard key={task.id} task={task} />
-                      ))}
+                    {/* Column Header */}
+                    <div className="flex justify-between items-center mb-3 sm:mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2.5 h-2.5 rounded-full ${col.dot}`} />
+                        <h3 className="text-white font-semibold text-sm">{col.label}</h3>
+                      </div>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${col.count_bg}`}>
+                        {colTasks.length}
+                      </span>
                     </div>
-                  </SortableContext>
 
-                  {colTasks.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-10 text-slate-600">
-                      <div className="text-2xl mb-2">📭</div>
-                      <p className="text-xs">Drop tasks here</p>
-                    </div>
-                  )}
-                </div>
-              </DroppableColumn>
+                    {/* Task List */}
+                    <SortableContext
+                      items={colTasks.map((t: any) => t.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="flex flex-col gap-3">
+                        {colTasks.map((task: any) => (
+                          <TaskCard key={task.id} task={task} />
+                        ))}
+                      </div>
+                    </SortableContext>
+
+                    {colTasks.length === 0 && (
+                      <div className="flex flex-col items-center justify-center py-10 text-slate-600">
+                        <div className="text-2xl mb-2">📭</div>
+                        <p className="text-xs">Drop tasks here</p>
+                      </div>
+                    )}
+                  </div>
+                </DroppableColumn>
+              </div>
             )
           })}
         </div>
 
         <DragOverlay dropAnimation={{ duration: 150, easing: 'cubic-bezier(0.18,0.67,0.6,1.22)' }}>
           {activeTask ? (
-            <div className="bg-slate-900 border-2 border-indigo-500 rounded-xl p-4 shadow-2xl rotate-1 scale-105 w-72">
+            <div className="bg-slate-900 border-2 border-indigo-500 rounded-xl p-4 shadow-2xl rotate-1 scale-105 w-64 sm:w-72">
               <p className="text-white font-semibold text-sm break-words">{activeTask.title}</p>
               {activeTask.description && (
                 <p className="text-slate-400 text-xs mt-1 line-clamp-2">{activeTask.description}</p>

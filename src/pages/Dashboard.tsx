@@ -22,8 +22,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-slate-900">
       <Header />
-      {/* px-4 on mobile, px-6 on larger screens — prevents edge overflow */}
-      <main className="px-4 py-5 sm:px-6 sm:py-6 max-w-screen-xl mx-auto">
+      <main className="px-3 py-4 sm:px-6 sm:py-6 max-w-screen-xl mx-auto">
         <KanbanBoard />
       </main>
     </div>

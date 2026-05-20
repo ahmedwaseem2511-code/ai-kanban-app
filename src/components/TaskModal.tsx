@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { addTask, updateTask } from '../store/taskSlice'
 import { supabase } from '../lib/supabase'
-import { generateDescription } from '../services/gemini'
+import { generateDescription } from '../services/groq'  // ← gemini.ts ki jagah groq.ts
 
 export default function TaskModal({ task, onClose }: any) {
   const dispatch = useDispatch()
@@ -16,7 +16,7 @@ export default function TaskModal({ task, onClose }: any) {
   const [error, setError] = useState('')
 
   const handleAIGenerate = async () => {
-    if (!title.trim()) return setError('Pehle title likhen!')
+    if (!title.trim()) return setError('Pehle title likhe!')
     setError('')
     setAiLoading(true)
     const desc = await generateDescription(title)
@@ -61,7 +61,6 @@ export default function TaskModal({ task, onClose }: any) {
       className="fixed inset-0 bg-black/80 flex items-end sm:items-center justify-center z-50"
       onClick={onClose}
     >
-      {/* Mobile: full-width bottom sheet | Desktop: centered card */}
       <div
         className="bg-slate-800 w-full sm:w-auto sm:min-w-[420px] sm:max-w-[460px] rounded-t-2xl sm:rounded-2xl p-5 sm:p-6 border border-slate-700 border-b-0 sm:border-b"
         onClick={(e) => e.stopPropagation()}

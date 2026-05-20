@@ -127,7 +127,10 @@ function TaskCard({ task }: any) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition: transition || 'transform 200ms ease',
-    opacity: isDragging ? 0.3 : 1, // Original card fades, DragOverlay shows the ghost
+    opacity: isDragging ? 0.3 : 1,
+    // ✅ FIX 1: yeh line ZAROORI hai mobile drag ke liye
+    // Iske bina browser touch ko scroll samajh leta hai, drag nahi hoti
+    touchAction: 'none',
   }
 
   const handleDelete = async () => {
@@ -146,40 +149,35 @@ function TaskCard({ task }: any) {
       <div
         ref={setNodeRef}
         style={style}
-        className="bg-slate-900 border border-slate-700 hover:border-indigo-500 rounded-xl p-4 mb-3 transition w-full select-none"
+        {...attributes}
+        {...listeners}
+        className="bg-slate-900 border border-slate-700 hover:border-indigo-500 rounded-xl p-4 mb-3 transition w-full select-none cursor-grab active:cursor-grabbing"
       >
-        {/* Drag Handle Area — top part of card is draggable */}
-        <div
-          {...attributes}
-          {...listeners}
-          className="cursor-grab active:cursor-grabbing"
-        >
-          <h3 className="text-white font-semibold text-sm mb-1 break-words">
-            {task.title}
-          </h3>
+        <h3 className="text-white font-semibold text-sm mb-1 break-words">
+          {task.title}
+        </h3>
 
-          {task.description && (
-            <p className="text-slate-400 text-xs mb-3 line-clamp-2 break-words">
-              {task.description}
-            </p>
-          )}
+        {task.description && (
+          <p className="text-slate-400 text-xs mb-3 line-clamp-2 break-words">
+            {task.description}
+          </p>
+        )}
 
-          <div className="flex justify-between items-center mb-3 gap-2 flex-wrap">
-            <span
-              className={`text-xs px-2 py-1 rounded-full font-medium ${priorityColors[task.priority]}`}
-            >
-              {task.priority}
+        <div className="flex justify-between items-center mb-3 gap-2 flex-wrap">
+          <span
+            className={`text-xs px-2 py-1 rounded-full font-medium ${priorityColors[task.priority]}`}
+          >
+            {task.priority}
+          </span>
+
+          {task.due_date && (
+            <span className="text-slate-500 text-xs">
+              📅 {task.due_date}
             </span>
-
-            {task.due_date && (
-              <span className="text-slate-500 text-xs">
-                📅 {task.due_date}
-              </span>
-            )}
-          </div>
+          )}
         </div>
 
-        {/* Buttons — NOT draggable, use stopPropagation */}
+        {/* Buttons — stopPropagation se drag trigger nahi hogi */}
         <div className="flex gap-2">
           <button
             onPointerDown={(e) => e.stopPropagation()}
